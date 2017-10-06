@@ -16,8 +16,8 @@ __email__ = "matevz.vucnik@ijs.si"
 
 @wishful_module.build_module
 class UwbModule(wishful_module.AgentModule):
-    settings = None
     uwbnode = None
+    settings = None
 
     def __init__(self, dev):
         super(UwbModule, self).__init__()
@@ -29,22 +29,29 @@ class UwbModule(wishful_module.AgentModule):
 
     @wishful_module.bind_function(upis.radio.get_radio_info)
     def get_radio_info(self, platform_id):
-        self.settings = self.uwbnode.get_radio_settings()
-        return self.settings.get_dict()
+        try:
+            self.settings = self.uwbnode.get_radio_settings()
+            return self.settings.get_dict()
+        except:
+            return {'ch_code': 1, 'pac': 1, 'nssfd': 1, 'prf': 1, 'ch': 1, 'plen': 1, 'sfdto': 1, 'dr': 1}
 
     @wishful_module.bind_function(upis.radio.set_parameters)
     def set_parameters(self, params):
-        self.settings.channel = params['ch']
-        self.settings.channel_code = params['ch_code']
-        self.settings.prf = params['prf']
-        self.settings.datarate = params['dr']
-        self.settings.preamble_length = params['plen']
-        self.settings.pac_size = params['pac']
-        self.settings.nssfd = params['nssfd']
-        self.settings.sfd_timeout = params['sfdto']
+        try:
+            self.settings.channel = params['ch']
+            self.settings.channel_code = params['ch_code']
+            self.settings.prf = params['prf']
+            self.settings.datarate = params['dr']
+            self.settings.preamble_length = params['plen']
+            self.settings.pac_size = params['pac']
+            self.settings.nssfd = params['nssfd']
+            self.settings.sfd_timeout = params['sfdto']
+            
+            self.uwbnode.setup_radio(self.settings)
+            return {'ch_code': 0, 'pac': 0, 'nssfd': 0, 'prf': 0, 'ch': 0, 'plen': 0, 'sfdto': 0, 'dr': 0}
         
-        self.uwbnode.setup_radio(self.settings)
-        return {'ch_code': 0, 'pac': 0, 'nssfd': 0, 'prf': 0, 'ch': 0, 'plen': 0, 'sfdto': 0, 'dr': 0}
+        except:
+            return {'ch_code': 1, 'pac': 1, 'nssfd': 1, 'prf': 1, 'ch': 1, 'plen': 1, 'sfdto': 1, 'dr': 1}
 
     @wishful_module.bind_function(upis.radio.get_measurements)
     def get_measurements(self, params):
@@ -60,6 +67,6 @@ class UwbModule(wishful_module.AgentModule):
                 "Max_noise": res['max_noise'],
                 "RXPACC": res['rxpacc'],
                 "FP_index": res['fp_index'],
-                "Raw": res['cir']}
+                "Impulse_response": res['cir']}
                 
                 return measurements
