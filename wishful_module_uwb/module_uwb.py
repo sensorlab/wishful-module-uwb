@@ -31,7 +31,15 @@ class UwbModule(wishful_module.AgentModule):
     def get_radio_info(self, platform_id):
         try:
             self.settings = self.uwbnode.get_radio_settings()
+            return {'ch_code': 0, 'pac': 0, 'nssfd': 0, 'prf': 0, 'ch': 0, 'plen': 0, 'sfdto': 0, 'dr': 0}
+        except:
+            return {'ch_code': 1, 'pac': 1, 'nssfd': 1, 'prf': 1, 'ch': 1, 'plen': 1, 'sfdto': 1, 'dr': 1}
+
+    @wishful_module.bind_function(upis.radio.get_parameters)
+    def get_parameters(self, params):
+        try:
             return self.settings.get_dict()
+        
         except:
             return {'ch_code': 1, 'pac': 1, 'nssfd': 1, 'prf': 1, 'ch': 1, 'plen': 1, 'sfdto': 1, 'dr': 1}
 
