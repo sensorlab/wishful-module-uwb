@@ -32,6 +32,7 @@ class UwbModule(wishful_module.AgentModule):
         try:
             self.settings = self.uwbnode.get_radio_settings()
             return {'ch_code': 0, 'pac': 0, 'nssfd': 0, 'prf': 0, 'ch': 0, 'plen': 0, 'sfdto': 0, 'dr': 0}
+        
         except:
             return {'ch_code': 1, 'pac': 1, 'nssfd': 1, 'prf': 1, 'ch': 1, 'plen': 1, 'sfdto': 1, 'dr': 1}
 
